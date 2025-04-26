@@ -16,11 +16,16 @@ app.use("/", async (req, res) => {
       method: req.method,
       headers: {
         "Content-Type": "application/json",
-      }
+      },
     };
 
-    // ✅ GET이나 HEAD에는 body가 없어야 함
-    if (req.method !== "GET" && req.method !== "HEAD") {
+    // ✅ GET, HEAD는 body 절대 없음 + POST 같은 것도 req.body 있을 때만
+    if (
+      req.method !== "GET" &&
+      req.method !== "HEAD" &&
+      req.body &&
+      Object.keys(req.body).length > 0
+    ) {
       options.body = JSON.stringify(req.body);
     }
 
