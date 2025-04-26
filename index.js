@@ -12,18 +12,24 @@ app.use("/", async (req, res) => {
   const target = BACKEND + req.url;
 
   try {
-    const response = await fetch(target, {
+    const options = {
       method: req.method,
       headers: {
         "Content-Type": "application/json",
-      },
-      body: req.method !== "GET" ? JSON.stringify(req.body) : null,
-    });
+      }
+    };
 
+    // ✅ GET이나 HEAD에는 body가 없어야 함
+    if (req.method !== "GET" && req.method !== "HEAD") {
+      options.body = JSON.stringify(req.body);
+    }
+
+    const response = await fetch(target, options);
     const data = await response.text();
+
     res.status(response.status).send(data);
   } catch (err) {
-    console.error(err);
+    console.error("프록시 오류:", err);
     res.status(500).json({ error: "Proxy error" });
   }
 });
